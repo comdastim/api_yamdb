@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from api.validators import year_validator
 
 User = get_user_model()
 
@@ -36,9 +37,15 @@ class Titles(models.Model):
         Categories,
         related_name='titles',
         on_delete=models.SET_NULL,
+        blank = True,
+        null=True
     )
     description = models.TextField(max_length=200)
-    year = models.IntegerField(blank = True, null = True)
+    year = models.IntegerField(
+        blank = True,
+        null = True,
+        validators = [year_validator,] 
+    )
 
     def __str__(self):
         return self.name
