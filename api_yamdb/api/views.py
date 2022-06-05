@@ -2,12 +2,13 @@ from rest_framework import viewsets, permissions, status
 
 
 from .mixins import GetCreateDeleteViewSet
-from reviews.models import Titles, Categories, Genres, User
+from reviews.models import Titles, Categories, Genres, User, Review
 from .serializers import (RegisterNewUserSerializer, TokenSerializer,
                         UserEditSerializer, UserSerializer, 
                         CategoriesSerializer, TitleReadSerializer,
-                        TitleWriteSerializer, GenresSerializer)
-from .permissions import IsAdminOrReadOnly, IsAdmin 
+                        TitleWriteSerializer, GenresSerializer,
+                        ReviewSerializer, CommentSerializer)
+from .permissions import IsAdminOrReadOnly, IsAdmin, IsOwnerOrReadOnly
 
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from django.contrib.auth.tokens import default_token_generator
@@ -15,7 +16,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -115,3 +116,30 @@ class GenreViewSet(GetCreateDeleteViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = (IsOwnerOrReadOnly, )
+    pagination_class = LimitOffsetPagination
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(Titles, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
+
+    def get_queryset(self):
+        title = get_object_or_404(Titles, pk=self.kwargs.get('title_id'))
+        return title.reviews
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsOwnerOrReadOnly, )
+    pagination_class = LimitOffsetPagination
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return review.comments
