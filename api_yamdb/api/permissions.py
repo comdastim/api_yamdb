@@ -10,3 +10,9 @@ class IsAdminOrReadOnly(BasePermission):
             return True
         elif ( request.user.is_superuser):
             return True
+
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and (
+            request.user.is_admin or request.user.is_superuser)
