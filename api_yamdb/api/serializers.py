@@ -62,13 +62,15 @@ class UserEditSerializer(serializers.ModelSerializer):
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
-        fields = '__all__'
+        exclude = ('id',)
+        lookup_field = 'slug'
 
 
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genres
-        fields = '__all__'
+        exclude = ('id', )
+        lookup_field = 'slug'
 
 
 class TitlesReadSerializer(serializers.ModelSerializer):
@@ -96,7 +98,7 @@ class TitlesWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Titles
-        fields = '__all__'
+        exclude = ('id', )
 
 
 class ReviewSerializer(serializers.ModelSerializer):

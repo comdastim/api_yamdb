@@ -71,11 +71,6 @@ class Categories(models.Model):
 class Genres(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    category = models.ForeignKey(
-        Categories,
-        related_name='genres',
-        on_delete=models.CASCADE,
-    )
 
     def __str__(self):
         return self.name
@@ -83,7 +78,6 @@ class Genres(models.Model):
 
 class Titles(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
     genre = models.ManyToManyField(
         Genres,
         related_name='titles',

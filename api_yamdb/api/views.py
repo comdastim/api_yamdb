@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Categories, Genres, Review, Titles, User
 from django_filters import rest_framework as filters
+from rest_framework.filters import SearchFilter
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from .filters import TitlesFilter
 from .mixins import GetCreateDeleteViewSet
@@ -111,12 +112,18 @@ class CategoriesViewSet(GetCreateDeleteViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class GenresViewSet(GetCreateDeleteViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
