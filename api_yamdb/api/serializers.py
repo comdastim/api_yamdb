@@ -1,7 +1,6 @@
 from rest_framework import serializers
-
-from reviews.models import Categories, Genres, Titles, User,  Review, Comment
-from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
+from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
+from reviews.models import Categories, Comment, Genres, Review, Titles, User
 
 
 class RegisterNewUserSerializer(serializers.ModelSerializer):
@@ -64,7 +63,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = '__all__'
-        
+
 
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,8 +72,8 @@ class GenresSerializer(serializers.ModelSerializer):
 
 
 class TitlesReadSerializer(serializers.ModelSerializer):
-    category = CategoriesSerializer(many = False)
-    genre = GenresSerializer (many = True)
+    category = CategoriesSerializer(many=False)
+    genre = GenresSerializer(many=True)
     rating = serializers.IntegerField()
 
     class Meta:
@@ -84,17 +83,21 @@ class TitlesReadSerializer(serializers.ModelSerializer):
 
 class TitlesWriteSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
-        many = False,
-        queryset = Categories.objects.all()
+        slug_field='slug',
+        many=False,
+        queryset=Categories.objects.all()
     )
     genre = serializers.SlugRelatedField(
-        many = False,
-        queryset = Genres.objects.all()
+        slug_field='slug',
+        many=True,
+        queryset=Genres.objects.all()
     )
     year = serializers.IntegerField()
+
     class Meta:
         model = Titles
         fields = '__all__'
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(

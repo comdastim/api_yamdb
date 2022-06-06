@@ -1,6 +1,8 @@
-from django.db import models
 from api.validators import year_validator
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+
 
 class User(AbstractUser):
     ADMIN = 'admin'
@@ -90,18 +92,19 @@ class Titles(models.Model):
         Categories,
         related_name='titles',
         on_delete=models.SET_NULL,
-        blank = True,
+        blank=True,
         null=True
     )
     description = models.TextField(max_length=200)
     year = models.IntegerField(
-        blank = True,
-        null = True,
-        validators = [year_validator,] 
+        blank=True,
+        null=True,
+        validators=[year_validator, ]
     )
 
     def __str__(self):
         return self.name
+
 
 class Review(models.Model):
     text = models.TextField()
@@ -124,4 +127,3 @@ class Comment(models.Model):
         User, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-

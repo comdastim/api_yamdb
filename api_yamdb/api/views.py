@@ -1,24 +1,23 @@
-from rest_framework import viewsets, permissions, status
-
-
-from .mixins import GetCreateDeleteViewSet
-from reviews.models import Titles, Categories, Genres, User, Review
-from .serializers import (RegisterNewUserSerializer, TokenSerializer,
-                        UserEditSerializer, UserSerializer, 
-                        CategoriesSerializer, TitleReadSerializer,
-                        TitleWriteSerializer, GenresSerializer,
-                        ReviewSerializer, CommentSerializer)
-from .permissions import IsAdminOrReadOnly, IsAdmin, IsOwnerOrReadOnly
-
-from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.pagination import (LimitOffsetPagination,
+                                       PageNumberPagination)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from reviews.models import Categories, Genres, Review, Titles, User
+
+from api_yamdb.settings import DEFAULT_FROM_EMAIL
+
+from .mixins import GetCreateDeleteViewSet
+from .permissions import IsAdmin, IsAdminOrReadOnly, IsOwnerOrReadOnly
+from .serializers import (CategoriesSerializer, CommentSerializer,
+                          GenresSerializer, RegisterNewUserSerializer,
+                          ReviewSerializer, TitlesReadSerializer,
+                          TitlesWriteSerializer, TokenSerializer,
+                          UserEditSerializer, UserSerializer)
 
 
 @api_view(["POST"])
@@ -97,25 +96,26 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
-    serializer_class = TitleReadSerializer
+    serializer_class = TitlesReadSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:
-            return TitleWriteSerializer
-        return TitleReadSerializer
+            return TitlesWriteSerializer
+        return TitlesReadSerializer
 
 
-class CategoryViewSet(GetCreateDeleteViewSet):
+class CategoriesViewSet(GetCreateDeleteViewSet):
     queryset = Categories.objects.all()
-    serializer_class = CategoriesSerializer 
+    serializer_class = CategoriesSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
 
-class GenreViewSet(GetCreateDeleteViewSet):
+class GenresViewSet(GetCreateDeleteViewSet):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
     permission_classes = (IsAdminOrReadOnly,)
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
