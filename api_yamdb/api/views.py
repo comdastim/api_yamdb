@@ -8,9 +8,9 @@ from rest_framework.pagination import (LimitOffsetPagination,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Categories, Genres, Review, Titles, User
-
+from django_filters import rest_framework as filters
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
-
+from .filters import TitlesFilter
 from .mixins import GetCreateDeleteViewSet
 from .permissions import IsAdmin, IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import (CategoriesSerializer, CommentSerializer,
@@ -98,6 +98,8 @@ class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
     serializer_class = TitlesReadSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = TitlesFilter
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:
