@@ -17,16 +17,16 @@ class RegisterNewUserSerializer(serializers.ModelSerializer):
         ]
     )
 
+    class Meta:
+        fields = ("username", "email")
+        model = User
+
     def validate_username(self, value):
         if value.lower() == "me":
             raise serializers.ValidationError(
                 "Имя пользователя не может быть 'me'!"
             )
         return value
-
-    class Meta:
-        fields = ("username", "email")
-        model = User
 
 
 class TokenSerializer(serializers.Serializer):
@@ -113,6 +113,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    class Meta:
+        fields = '__all__'
+        model = Review
+
     def validate(self, data):
         request = self.context['request']
         author = request.user
@@ -122,10 +126,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             if Review.objects.filter(title=title, author=author).exists():
                 raise ValidationError('Вы уже написали свой отзыв')
         return data
-
-    class Meta:
-        fields = '__all__'
-        model = Review
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -5,6 +5,8 @@ from django.db import models
 
 
 class User(AbstractUser):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username',)
     ADMIN = 'admin'
     MODERATOR = 'moderator'
     USER = 'user'
@@ -18,12 +20,6 @@ class User(AbstractUser):
         verbose_name='Адрес электронной почты',
         unique=True,
     )
-    username = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=150,
-        null=True,
-        unique=True
-    )
     role = models.CharField(
         verbose_name='Роль',
         max_length=50,
@@ -36,19 +32,8 @@ class User(AbstractUser):
         blank=True
     )
 
-    @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
     class Meta:
-        ordering = ['id']
+        ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -58,6 +43,14 @@ class User(AbstractUser):
                 name="Использовать имя 'me' в качестве username запрещено!"
             )
         ]
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN
 
 
 class Categories(models.Model):
@@ -90,7 +83,7 @@ class Title(models.Model):
         null=True
     )
     description = models.TextField(max_length=200)
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         blank=True,
         null=True,
         validators=[year_validator, ]
@@ -106,7 +99,7 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews')
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     pub_date = models.DateTimeField(
@@ -115,7 +108,7 @@ class Review(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'author'],
+                fields=('title', 'author',),
                 name='unique_review'
             ),
         ]
