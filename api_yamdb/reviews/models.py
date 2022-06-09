@@ -34,7 +34,7 @@ class User(AbstractUser):
     )
 
     class Meta:
-        ordering = ['id']
+        ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -84,7 +84,7 @@ class Title(models.Model):
         null=True
     )
     description = models.TextField(max_length=200)
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         blank=True,
         null=True,
         validators=[year_validator, ]
@@ -100,7 +100,7 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews')
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     pub_date = models.DateTimeField(
@@ -109,7 +109,7 @@ class Review(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'author'],
+                fields=('title', 'author',),
                 name='unique_review'
             ),
         ]
