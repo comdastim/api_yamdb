@@ -10,9 +10,9 @@ from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Categories, Genres, Review, Title, User
 
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
+from reviews.models import Categories, Genres, Review, Title, User
 
 from .filters import TitlesFilter
 from .mixins import GetCreateDeleteViewSet

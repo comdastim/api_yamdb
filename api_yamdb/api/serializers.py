@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
+
 from reviews.models import Categories, Comment, Genres, Review, Title, User
 
 
@@ -17,16 +18,16 @@ class RegisterNewUserSerializer(serializers.ModelSerializer):
         ]
     )
 
+    class Meta:
+        fields = ("username", "email")
+        model = User
+
     def validate_username(self, value):
         if value.lower() == "me":
             raise serializers.ValidationError(
                 "Имя пользователя не может быть 'me'!"
             )
         return value
-
-    class Meta:
-        fields = ("username", "email")
-        model = User
 
 
 class TokenSerializer(serializers.Serializer):
@@ -101,7 +102,13 @@ class TitlesWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = (
-            'id', 'name', 'year', 'description', 'genre', 'category')
+            'id',
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category'
+        )
 
 
 class ReviewSerializer(serializers.ModelSerializer):

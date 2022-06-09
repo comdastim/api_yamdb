@@ -1,10 +1,13 @@
-from api.validators import year_validator
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from api.validators import year_validator
+
 
 class User(AbstractUser):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username',)
     ADMIN = 'admin'
     MODERATOR = 'moderator'
     USER = 'user'
@@ -18,12 +21,6 @@ class User(AbstractUser):
         verbose_name='Адрес электронной почты',
         unique=True,
     )
-    username = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=150,
-        null=True,
-        unique=True
-    )
     role = models.CharField(
         verbose_name='Роль',
         max_length=50,
@@ -36,17 +33,6 @@ class User(AbstractUser):
         blank=True
     )
 
-    @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
     class Meta:
         ordering = ['id']
         verbose_name = 'Пользователь'
@@ -58,6 +44,14 @@ class User(AbstractUser):
                 name="Использовать имя 'me' в качестве username запрещено!"
             )
         ]
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN
 
 
 class Categories(models.Model):
